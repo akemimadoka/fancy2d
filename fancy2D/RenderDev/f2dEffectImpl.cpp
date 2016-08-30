@@ -107,13 +107,14 @@ f2dEffectImpl::f2dEffectImpl(f2dRenderDeviceImpl* pDev, f2dStream* pStream, fBoo
 		throw fcyException("f2dEffectImpl::f2dEffectImpl", "Param 'pStream' is null.");
 
 	// 读取所有代码
-	fByte *tCodes = new fByte[ (size_t)pStream->GetLength() ];
+	fByte *tCodes = new fByte[ (size_t)pStream->GetLength() + 1 ];
 	pStream->SetPosition(FCYSEEKORIGIN_BEG, 0);
 	if(FCYFAILED(pStream->ReadBytes(tCodes, pStream->GetLength(), NULL)))
 	{
 		FCYSAFEDELARR(tCodes);
 		throw fcyException("f2dEffectImpl::f2dEffectImpl", "f2dStream::ReadBytes failed.");
 	}
+	tCodes[ pStream->GetLength() ] = '\0';
 
 	// 创建效果
 	ID3DXEffect* pEffect = NULL;
@@ -149,7 +150,7 @@ f2dEffectImpl::f2dEffectImpl(f2dRenderDeviceImpl* pDev, f2dStream* pStream, fBoo
 		}
 		else
 		{
-			fcyWin32COMException("f2dEffectImpl::f2dEffectImpl", "D3DXCreateEffectEx failed.", tHR);
+			throw fcyWin32COMException("f2dEffectImpl::f2dEffectImpl", "D3DXCreateEffectEx failed.", tHR);
 		}
 	}
 
